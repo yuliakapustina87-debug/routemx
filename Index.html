@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RouteMX – Freight as a Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+--navy:#080f1e;--navy2:#0d1a30;--navy3:#132240;--blue:#1a56db;--blue-lt:#3b82f6;--teal:#0ea5e9;--green:#10b981;--green2:#34d399;--orange:#f97316;--orange2:#fb923c;--red:#ef4444;--white:#ffffff;--off:#f8faff;--muted:#64748b;--border:rgba(255,255,255,0.07);--r:16px;
+}
+body{font-family:'Instrument Sans',sans-serif;background:var(--navy);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(26,86,219,0.18) 0%,transparent 60%),radial-gradient(ellipse 50% 35% at 85% 75%,rgba(16,185,129,0.12) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 50% 50%,rgba(249,115,22,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.card{position:relative;z-index:1;width:100%;max-width:960px;border-radius:28px;background:rgba(13,26,48,0.95);border:1px solid rgba(255,255,255,0.09);box-shadow:0 0 0 1px rgba(255,255,255,0.04),0 40px 120px rgba(0,0,0,0.6),0 0 80px rgba(26,86,219,0.08);overflow:hidden;animation:cardIn 0.9s cubic-bezier(.16,1,.3,1) both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.header{padding:40px 52px 36px;display:grid;grid-template-columns:1fr auto;align-items:start;gap:20px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.header::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(26,86,219,0.6),rgba(16,185,129,0.4),transparent);}
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.logo{font-family:'Cabinet Grotesk',sans-serif;font-size:18px;font-weight:900;color:white;letter-spacing:-0.3px;}
+.logo em{color:var(--orange);font-style:normal;}
+.status-pill{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:99px;padding:4px 12px 4px 8px;font-size:11px;font-weight:600;color:var(--green2);letter-spacing:0.8px;text-transform:uppercase;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(16,185,129,0.5);animation:pulseRing 2s ease-in-out infinite;}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(16,185,129,0.5);}70%{box-shadow:0 0 0 6px rgba(16,185,129,0);}100%{box-shadow:0 0 0 0 rgba(16,185,129,0);}}
+.headline{font-family:'Cabinet Grotesk',sans-serif;font-size:42px;font-weight:900;color:white;line-height:1.1;letter-spacing:-1px;margin-bottom:12px;}
+.headline .accent{background:linear-gradient(90deg,var(--blue-lt),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.subheadline{font-size:16px;line-height:1.6;color:rgba(255,255,255,0.5);max-width:460px;}
+.header-stat{text-align:right;padding:16px 20px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:14px;min-width:160px;flex-shrink:0;}
+.header-stat-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px;}
+.header-stat-value{font-family:'Cabinet Grotesk',sans-serif;font-size:32px;font-weight:900;color:var(--green2);line-height:1;}
+.header-stat-sub{font-size:12px;color:rgba(16,185,129,0.6);margin-top:4px;}
+.route-strip{display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);}
+.route-name{font-family:'Cabinet Grotesk',sans-serif;font-size:16px;font-weight:700;color:white;display:flex;align-items:center;gap:10px;}
+.route-dot{width:8px;height:8px;border-radius:50%;background:var(--blue-lt);}
+.route-meta{display:flex;gap:20px;}
+.meta-item{font-size:12px;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:5px;}
+.meta-item strong{color:rgba(255,255,255,0.6);font-weight:600;}
+.segments-wrap{padding:32px 52px 28px;}
+.segments{display:grid;grid-template-columns:1fr 44px 1fr 44px 1fr;align-items:stretch;gap:0;}
+.connector{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:16px;gap:4px;}
+.conn-line{width:100%;height:2px;background:linear-gradient(90deg,rgba(255,255,255,0.08),rgba(255,255,255,0.2),rgba(255,255,255,0.08));position:relative;}
+.conn-line::after{content:'›';position:absolute;right:-6px;top:-9px;font-size:18px;color:rgba(255,255,255,0.3);}
+.seg{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:22px 20px 18px;position:relative;transition:border-color 0.2s,background 0.2s,transform 0.2s;cursor:default;}
+.seg:hover{background:rgba(255,255,255,0.06);transform:translateY(-2px);}
+.seg.best{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.3);box-shadow:0 0 0 1px rgba(16,185,129,0.15),inset 0 1px 0 rgba(16,185,129,0.1);}
+.seg.best:hover{border-color:rgba(16,185,129,0.5);}
+.seg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.seg-type{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.best-tag{display:flex;align-items:center;gap:4px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:99px;padding:2px 8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green2);}
+.best-tag::before{content:'✓';font-size:8px;}
+.seg-cities{font-family:'Cabinet Grotesk',sans-serif;font-size:15px;font-weight:800;color:white;margin-bottom:4px;line-height:1.3;}
+.seg-cities span{color:rgba(255,255,255,0.3);font-weight:400;}
+.seg-carrier{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:18px;display:flex;align-items:center;gap:6px;}
+.carrier-icon{width:18px;height:18px;border-radius:4px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;}
+.seg-price-row{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;}
+.price-now{font-family:'Cabinet Grotesk',sans-serif;font-size:26px;font-weight:900;color:white;line-height:1;}
+.price-was{font-size:14px;color:rgba(255,255,255,0.25);text-decoration:line-through;line-height:1.8;}
+.price-delta{font-size:12px;font-weight:700;color:var(--green2);background:rgba(16,185,129,0.12);border-radius:6px;padding:3px 7px;line-height:1;align-self:center;}
+.bids-row{margin-top:14px;display:flex;gap:3px;align-items:flex-end;height:28px;}
+.bid-bar{flex:1;border-radius:3px;background:rgba(255,255,255,0.07);position:relative;overflow:hidden;transition:background 0.2s;}
+.bid-bar.winner{background:rgba(16,185,129,0.25);}
+.bid-bar.winner::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,185,129,0.3),rgba(16,185,129,0.1));}
+.bids-label{font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px;letter-spacing:0.5px;}
+.outcome-wrap{padding:0 52px 32px;}
+.outcome{background:linear-gradient(135deg,rgba(16,185,129,0.08) 0%,rgba(26,86,219,0.06) 100%);border:1px solid rgba(16,185,129,0.2);border-radius:18px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;position:relative;overflow:hidden;}
+.outcome::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,0.5),transparent);}
+.outcome-numbers{display:flex;align-items:center;gap:32px;flex-wrap:wrap;}
+.out-item{display:flex;flex-direction:column;gap:4px;}
+.out-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.out-val{font-family:'Cabinet Grotesk',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.4);text-decoration:line-through;}
+.out-val.active{color:white;text-decoration:none;}
+.out-divider{width:1px;height:48px;background:rgba(255,255,255,0.08);flex-shrink:0;}
+.saving-block{display:flex;flex-direction:column;gap:2px;}
+.saving-tag{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);}
+.saving-big{font-family:'Cabinet Grotesk',sans-serif;font-size:40px;font-weight:900;color:var(--green2);line-height:1;letter-spacing:-1px;}
+.saving-sub{font-size:13px;color:rgba(16,185,129,0.6);font-weight:500;}
+.cta-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.cta{background:linear-gradient(135deg,var(--orange),var(--orange2));color:white;border:none;border-radius:12px;padding:14px 26px;font-family:'Cabinet Grotesk',sans-serif;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;letter-spacing:0.2px;box-shadow:0 4px 20px rgba(249,115,22,0.3);transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,0.4);}
+.cta-hint{font-size:11px;color:rgba(255,255,255,0.25);text-align:right;}
+.footer{padding:20px 52px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border);}
+.scale-note{font-size:14px;color:rgba(255,255,255,0.35);line-height:1.5;}
+.scale-note strong{color:white;font-weight:600;}
+.scale-note .highlight{color:var(--green2);font-weight:700;}
+.trust-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.tpill{font-size:11px;font-weight:500;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:99px;padding:5px 12px;white-space:nowrap;}
+.seg{animation:segIn 0.6s cubic-bezier(.16,1,.3,1) both;}
+.seg:nth-child(1){animation-delay:0.3s;}
+.seg:nth-child(3){animation-delay:0.45s;}
+.seg:nth-child(5){animation-delay:0.6s;}
+@keyframes segIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.outcome{animation:outIn 0.7s 0.75s cubic-bezier(.16,1,.3,1) both;}
+@keyframes outIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@media(max-width:700px){.header,.segments-wrap,.outcome-wrap,.footer,.route-strip{padding-left:24px;padding-right:24px;}.headline{font-size:30px;}.segments{grid-template-columns:1fr;gap:12px;}.connector{display:none;}.outcome{flex-direction:column;align-items:flex-start;}.header{grid-template-columns:1fr;}.header-stat{text-align:left;}.cta-wrap{align-items:flex-start;}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div>
+      <div class="logo-row">
+        <div class="logo">Route<em>MX</em></div>
+        <div class="status-pill"><span class="pulse-dot"></span>Market open</div>
+      </div>
+      <div class="headline">Stop paying fixed freight rates.<br>Let carriers <span class="accent">compete on every segment.</span></div>
+      <div style="font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:14px;">A market layer for freight capacity.</div>
+      <div class="subheadline">RouteMX splits every shipment into segments and runs a live bid. Best carrier wins each leg. Total cost goes down.</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">Save on every shipment</div>
+      <div class="header-stat-value">2–5%</div>
+      <div class="header-stat-sub">typical savings per route</div>
+    </div>
+  </div>
+  <div class="route-strip">
+    <div class="route-name"><span class="route-dot"></span>Amsterdam → Warsaw<span style="color:rgba(255,255,255,0.2);font-weight:400;font-size:14px;">· FTL · 22 pallets</span></div>
+    <div class="route-meta">
+      <div class="meta-item">Transit: <strong>24h</strong></div>
+      <div class="meta-item">Carriers bid: <strong>7</strong></div>
+      <div class="meta-item">Segments: <strong>3</strong></div>
+    </div>
+  </div>
+  <div class="segments-wrap">
+    <div class="segments">
+      <div class="seg">
+        <div class="seg-top"><div class="seg-type">Pick-up</div></div>
+        <div class="seg-cities">Amsterdam<br><span>→</span> AMS Hub</div>
+        <div class="seg-carrier"><div class="carrier-icon">🚐</div>Van Doorn Logistics</div>
+        <div class="seg-price-row"><div class="price-now">€310</div><div class="price-was">€390</div><div class="price-delta">–€80</div></div>
+        <div class="bids-row"><div class="bid-bar winner" style="height:28px"></div><div class="bid-bar" style="height:20px"></div><div class="bid-bar" style="height:14px"></div></div>
+        <div class="bids-label">3 bids · best selected</div>
+      </div>
+      <div class="connector"><div class="conn-line"></div></div>
+      <div class="seg best">
+        <div class="seg-top"><div class="seg-type">Line Haul</div><div class="best-tag">Best bid</div></div>
+        <div class="seg-cities">AMS Hub<br><span>→</span> WAW Terminal</div>
+        <div class="seg-carrier"><div class="carrier-icon">🚛</div>TransKarpat</div>
+        <div class="seg-price-row"><div class="price-now">€1,840</div><div class="price-was">€2,100</div><div class="price-delta">–€260</div></div>
+        <div class="bids-row"><div class="bid-bar winner" style="height:28px"></div><div class="bid-bar" style="height:22px"></div><div class="bid-bar" style="height:18px"></div><div class="bid-bar" style="height:15px"></div></div>
+        <div class="bids-label">4 bids · best selected</div>
+      </div>
+      <div class="connector"><div class="conn-line"></div></div>
+      <div class="seg">
+        <div class="seg-top"><div class="seg-type">Last Mile</div></div>
+        <div class="seg-cities">WAW Terminal<br><span>→</span> Warsaw</div>
+        <div class="seg-carrier"><div class="carrier-icon">🚚</div>FastDel PL</div>
+        <div class="seg-price-row"><div class="price-now">€220</div><div class="price-was">€260</div><div class="price-delta">–€40</div></div>
+        <div class="bids-row"><div class="bid-bar winner" style="height:28px"></div><div class="bid-bar" style="height:16px"></div></div>
+        <div class="bids-label">2 bids · best selected</div>
+      </div>
+    </div>
+  </div>
+  <div class="outcome-wrap">
+    <div class="outcome">
+      <div class="outcome-numbers">
+        <div class="out-item"><div class="out-label">Fixed contract</div><div class="out-val">€2,750</div></div>
+        <div class="out-divider"></div>
+        <div class="out-item"><div class="out-label">RouteMX total</div><div class="out-val active">€2,370</div></div>
+        <div class="out-divider"></div>
+        <div class="saving-block"><div class="saving-tag">↓ Example route: 13.8% saved</div><div class="saving-big">€380</div><div class="saving-sub">13.8% on this shipment</div></div>
+      </div>
+      <div class="cta-wrap">
+        <button class="cta">See savings on your routes →</button>
+        <div class="cta-hint">Free to try · No carrier changes needed</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="scale-note">Running <strong>400 shipments/month</strong> at this rate?<br>That's <span class="highlight">€152,000 back per year</span> — without changing a single carrier.</div>
+    <div class="trust-pills">
+      <div class="tpill">No carrier changes needed</div>
+      <div class="tpill">Works with your carriers</div>
+      <div class="tpill">No integration needed</div>
+      <div class="tpill">Live in 48h</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
