@@ -1,179 +1,733 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RouteMX – Freight as a Market</title>
-<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>RouteMX – Freight Capacity Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
---navy:#080f1e;--navy2:#0d1a30;--navy3:#132240;--blue:#1a56db;--blue-lt:#3b82f6;--teal:#0ea5e9;--green:#10b981;--green2:#34d399;--orange:#f97316;--orange2:#fb923c;--red:#ef4444;--white:#ffffff;--off:#f8faff;--muted:#64748b;--border:rgba(255,255,255,0.07);--r:16px;
+  --bg:     #1c1c1e;
+  --bg2:    #242426;
+  --bg3:    #2e2e30;
+  --orange: #ff6b00;
+  --green:  #00d68f;
+  --green2: #00f0a0;
+  --blue:   #1a7aff;
+  --blue2:  #4d9dff;
+  --red:    #ff3b3b;
+  --dim:    rgba(255,255,255,0.45);
+  --dimmer: rgba(255,255,255,0.18);
+  --border: rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
 }
-body{font-family:'Instrument Sans',sans-serif;background:var(--navy);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 15% 20%,rgba(26,86,219,0.18) 0%,transparent 60%),radial-gradient(ellipse 50% 35% at 85% 75%,rgba(16,185,129,0.12) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 50% 50%,rgba(249,115,22,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
-.card{position:relative;z-index:1;width:100%;max-width:960px;border-radius:28px;background:rgba(13,26,48,0.95);border:1px solid rgba(255,255,255,0.09);box-shadow:0 0 0 1px rgba(255,255,255,0.04),0 40px 120px rgba(0,0,0,0.6),0 0 80px rgba(26,86,219,0.08);overflow:hidden;animation:cardIn 0.9s cubic-bezier(.16,1,.3,1) both;}
-@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
-.header{padding:40px 52px 36px;display:grid;grid-template-columns:1fr auto;align-items:start;gap:20px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.header::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(26,86,219,0.6),rgba(16,185,129,0.4),transparent);}
-.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-.logo{font-family:'Cabinet Grotesk',sans-serif;font-size:18px;font-weight:900;color:white;letter-spacing:-0.3px;}
-.logo em{color:var(--orange);font-style:normal;}
-.status-pill{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:99px;padding:4px 12px 4px 8px;font-size:11px;font-weight:600;color:var(--green2);letter-spacing:0.8px;text-transform:uppercase;}
-.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(16,185,129,0.5);animation:pulseRing 2s ease-in-out infinite;}
-@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(16,185,129,0.5);}70%{box-shadow:0 0 0 6px rgba(16,185,129,0);}100%{box-shadow:0 0 0 0 rgba(16,185,129,0);}}
-.headline{font-family:'Cabinet Grotesk',sans-serif;font-size:42px;font-weight:900;color:white;line-height:1.1;letter-spacing:-1px;margin-bottom:12px;}
-.headline .accent{background:linear-gradient(90deg,var(--blue-lt),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.subheadline{font-size:16px;line-height:1.6;color:rgba(255,255,255,0.5);max-width:460px;}
-.header-stat{text-align:right;padding:16px 20px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:14px;min-width:160px;flex-shrink:0;}
-.header-stat-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px;}
-.header-stat-value{font-family:'Cabinet Grotesk',sans-serif;font-size:32px;font-weight:900;color:var(--green2);line-height:1;}
-.header-stat-sub{font-size:12px;color:rgba(16,185,129,0.6);margin-top:4px;}
-.route-strip{display:flex;align-items:center;justify-content:space-between;padding:16px 52px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);}
-.route-name{font-family:'Cabinet Grotesk',sans-serif;font-size:16px;font-weight:700;color:white;display:flex;align-items:center;gap:10px;}
-.route-dot{width:8px;height:8px;border-radius:50%;background:var(--blue-lt);}
-.route-meta{display:flex;gap:20px;}
-.meta-item{font-size:12px;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:5px;}
-.meta-item strong{color:rgba(255,255,255,0.6);font-weight:600;}
-.segments-wrap{padding:32px 52px 28px;}
-.segments{display:grid;grid-template-columns:1fr 44px 1fr 44px 1fr;align-items:stretch;gap:0;}
-.connector{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:16px;gap:4px;}
-.conn-line{width:100%;height:2px;background:linear-gradient(90deg,rgba(255,255,255,0.08),rgba(255,255,255,0.2),rgba(255,255,255,0.08));position:relative;}
-.conn-line::after{content:'›';position:absolute;right:-6px;top:-9px;font-size:18px;color:rgba(255,255,255,0.3);}
-.seg{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:22px 20px 18px;position:relative;transition:border-color 0.2s,background 0.2s,transform 0.2s;cursor:default;}
-.seg:hover{background:rgba(255,255,255,0.06);transform:translateY(-2px);}
-.seg.best{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.3);box-shadow:0 0 0 1px rgba(16,185,129,0.15),inset 0 1px 0 rgba(16,185,129,0.1);}
-.seg.best:hover{border-color:rgba(16,185,129,0.5);}
-.seg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.seg-type{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);}
-.best-tag{display:flex;align-items:center;gap:4px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:99px;padding:2px 8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green2);}
-.best-tag::before{content:'✓';font-size:8px;}
-.seg-cities{font-family:'Cabinet Grotesk',sans-serif;font-size:15px;font-weight:800;color:white;margin-bottom:4px;line-height:1.3;}
-.seg-cities span{color:rgba(255,255,255,0.3);font-weight:400;}
-.seg-carrier{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:18px;display:flex;align-items:center;gap:6px;}
-.carrier-icon{width:18px;height:18px;border-radius:4px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;}
-.seg-price-row{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;}
-.price-now{font-family:'Cabinet Grotesk',sans-serif;font-size:26px;font-weight:900;color:white;line-height:1;}
-.price-was{font-size:14px;color:rgba(255,255,255,0.25);text-decoration:line-through;line-height:1.8;}
-.price-delta{font-size:12px;font-weight:700;color:var(--green2);background:rgba(16,185,129,0.12);border-radius:6px;padding:3px 7px;line-height:1;align-self:center;}
-.bids-row{margin-top:14px;display:flex;gap:3px;align-items:flex-end;height:28px;}
-.bid-bar{flex:1;border-radius:3px;background:rgba(255,255,255,0.07);position:relative;overflow:hidden;transition:background 0.2s;}
-.bid-bar.winner{background:rgba(16,185,129,0.25);}
-.bid-bar.winner::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,185,129,0.3),rgba(16,185,129,0.1));}
-.bids-label{font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px;letter-spacing:0.5px;}
-.outcome-wrap{padding:0 52px 32px;}
-.outcome{background:linear-gradient(135deg,rgba(16,185,129,0.08) 0%,rgba(26,86,219,0.06) 100%);border:1px solid rgba(16,185,129,0.2);border-radius:18px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;position:relative;overflow:hidden;}
-.outcome::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(16,185,129,0.5),transparent);}
-.outcome-numbers{display:flex;align-items:center;gap:32px;flex-wrap:wrap;}
-.out-item{display:flex;flex-direction:column;gap:4px;}
-.out-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);}
-.out-val{font-family:'Cabinet Grotesk',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.4);text-decoration:line-through;}
-.out-val.active{color:white;text-decoration:none;}
-.out-divider{width:1px;height:48px;background:rgba(255,255,255,0.08);flex-shrink:0;}
-.saving-block{display:flex;flex-direction:column;gap:2px;}
-.saving-tag{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);}
-.saving-big{font-family:'Cabinet Grotesk',sans-serif;font-size:40px;font-weight:900;color:var(--green2);line-height:1;letter-spacing:-1px;}
-.saving-sub{font-size:13px;color:rgba(16,185,129,0.6);font-weight:500;}
-.cta-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
-.cta{background:linear-gradient(135deg,var(--orange),var(--orange2));color:white;border:none;border-radius:12px;padding:14px 26px;font-family:'Cabinet Grotesk',sans-serif;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;letter-spacing:0.2px;box-shadow:0 4px 20px rgba(249,115,22,0.3);transition:all 0.2s;display:flex;align-items:center;gap:8px;}
-.cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,0.4);}
-.cta-hint{font-size:11px;color:rgba(255,255,255,0.25);text-align:right;}
-.footer{padding:20px 52px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--border);}
-.scale-note{font-size:14px;color:rgba(255,255,255,0.35);line-height:1.5;}
-.scale-note strong{color:white;font-weight:600;}
-.scale-note .highlight{color:var(--green2);font-weight:700;}
-.trust-pills{display:flex;gap:8px;flex-wrap:wrap;}
-.tpill{font-size:11px;font-weight:500;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:99px;padding:5px 12px;white-space:nowrap;}
-.seg{animation:segIn 0.6s cubic-bezier(.16,1,.3,1) both;}
-.seg:nth-child(1){animation-delay:0.3s;}
-.seg:nth-child(3){animation-delay:0.45s;}
-.seg:nth-child(5){animation-delay:0.6s;}
-@keyframes segIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.outcome{animation:outIn 0.7s 0.75s cubic-bezier(.16,1,.3,1) both;}
-@keyframes outIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-@media(max-width:700px){.header,.segments-wrap,.outcome-wrap,.footer,.route-strip{padding-left:24px;padding-right:24px;}.headline{font-size:30px;}.segments{grid-template-columns:1fr;gap:12px;}.connector{display:none;}.outcome{flex-direction:column;align-items:flex-start;}.header{grid-template-columns:1fr;}.header-stat{text-align:left;}.cta-wrap{align-items:flex-start;}}
+
+html, body { background: #1c1c1e !important; }
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: #1c1c1e;
+color: white;
+padding: 24px 20px;
+min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar { display: flex; align-items: center; margin-bottom: 8px; }
+.logo { font-size: 22px; font-weight: 800; color: white; letter-spacing: -0.5px; display: flex; align-items: center; }
+.logo-mx { color: var(–orange); }
+
+/* TABS — merged with form */
+.tabs {
+display: flex; gap: 4px;
+background: var(–bg2);
+border: 1px solid var(–border2);
+border-radius: 14px 14px 0 0;
+padding: 5px;
+width: 100%;
+border-bottom: none;
+}
+.tab {
+flex: 1; padding: 10px 16px; border-radius: 10px;
+font-size: 13px; font-weight: 700; cursor: pointer;
+border: none; background: none; color: var(–dim);
+font-family: ‘DM Sans’, sans-serif; transition: all 0.2s; text-align: center;
+}
+.tab.active { background: var(–bg3); color: white; }
+
+/* CARD — connects to tabs */
+.card {
+background: var(–bg2); border: 1px solid var(–border2);
+border-radius: 0 0 16px 16px; padding: 24px;
+margin-bottom: 16px; border-top: none;
+}
+
+/* FORM */
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.field-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(–dim); }
+.field-input {
+background: rgba(255,255,255,0.05); border: 1px solid var(–border2);
+border-radius: 10px; padding: 11px 14px;
+font-family: ‘DM Sans’, sans-serif; font-size: 15px; font-weight: 600;
+color: white; outline: none; transition: border-color 0.2s; width: 100%;
+}
+.field-input:focus { border-color: var(–blue); }
+.field-input option { background: #222; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* QTY */
+.qty-row { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.qty-btn {
+width: 34px; height: 34px; border-radius: 8px;
+border: 1px solid var(–border2); background: rgba(255,255,255,0.05);
+color: white; font-size: 18px; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DM Sans’, sans-serif; transition: background 0.15s;
+}
+.qty-btn:hover { background: rgba(255,255,255,0.1); }
+.qty-val { font-family: ‘Space Mono’, monospace; font-size: 18px; font-weight: 700; min-width: 28px; text-align: center; }
+
+/* SIZES */
+.sizes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.size-btn {
+padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+cursor: pointer; border: 1px solid var(–border2);
+background: rgba(255,255,255,0.04); color: var(–dim);
+font-family: ‘DM Sans’, sans-serif; line-height: 1.3; text-align: center; transition: all 0.15s;
+}
+.size-btn.active { background: rgba(26,122,255,0.15); border-color: rgba(26,122,255,0.35); color: var(–blue2); }
+
+/* SEARCH BTN */
+.search-btn {
+width: 100%; padding: 13px; border: none; border-radius: 10px;
+font-family: ‘DM Sans’, sans-serif; font-size: 15px; font-weight: 800;
+cursor: pointer; transition: all 0.2s; margin-top: 6px;
+}
+.btn-blue { background: linear-gradient(135deg, var(–blue), var(–blue2)); color: white; box-shadow: 0 4px 20px rgba(26,122,255,0.2); }
+.btn-grey { background: linear-gradient(135deg, #2a2a32, #3a3a44); color: white; border: 1px solid rgba(255,255,255,0.1); }
+.search-btn:hover { transform: translateY(-1px); }
+.search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* SLABEL */
+.slabel { font-family: ‘Space Mono’, monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–dimmer); margin-bottom: 10px; }
+
+/* RESULTS */
+.results { display: none; }
+.results.visible { display: block; }
+
+/* MARKET SIGNAL */
+.market-signal { font-size: 13px; font-weight: 700; color: var(–green); margin-bottom: 10px; }
+
+/* RECOMMENDED */
+.reco-card {
+display: none;
+background: #242426;
+border: 1px solid rgba(0,214,143,0.3);
+border-radius: 16px; padding: 20px 24px; margin-bottom: 12px;
+}
+.reco-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+.reco-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(–green2); }
+.reco-rate { font-size: 12px; font-weight: 700; color: var(–green); }
+.reco-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.reco-meta { font-size: 12px; color: var(–dim); margin-bottom: 14px; }
+.reco-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.reco-price { font-family: ‘Space Mono’, monospace; font-size: 26px; font-weight: 700; }
+.reco-per { font-size: 11px; color: var(–dim); margin-top: 2px; }
+.book-btn {
+padding: 12px 24px; background: var(–green); border: none;
+border-radius: 10px; color: #060d18;
+font-family: ‘DM Sans’, sans-serif; font-size: 14px; font-weight: 800;
+cursor: pointer; transition: all 0.2s;
+}
+.book-btn:hover { transform: translateY(-1px); background: var(–green2); }
+.trust-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.trust-item { font-size: 11px; color: var(–green); font-weight: 600; }
+
+/* ROUTE CARDS */
+.result-card {
+background: var(–bg3); border: 1px solid var(–border2);
+border-radius: 14px; padding: 18px 20px; margin-bottom: 10px;
+cursor: pointer; transition: all 0.2s;
+}
+.result-card:hover { border-color: rgba(26,122,255,0.3); }
+.result-card.selected { border-color: var(–blue); background: rgba(26,122,255,0.05); }
+
+.result-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.rtag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 9px; border-radius: 6px; }
+.rtag-direct { background: rgba(0,214,143,0.12); color: var(–green2); }
+.rtag-connect { background: rgba(26,122,255,0.12); color: var(–blue2); }
+.rtag-ai { background: rgba(255,255,255,0.06); color: var(–dim); }
+.btag { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 9px; border-radius: 6px; border: 1px solid; }
+.btag-reliable { background: rgba(0,214,143,0.1); border-color: rgba(0,214,143,0.25); color: var(–green); }
+.btag-cheap { background: rgba(26,122,255,0.1); border-color: rgba(26,122,255,0.25); color: var(–blue2); }
+.btag-slots { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); }
+
+.result-route { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; margin-bottom: 8px; flex-wrap: wrap; }
+.route-arrow { color: rgba(255,255,255,0.35); }
+.route-stop { font-size: 12px; font-weight: 500; color: var(–dim); background: rgba(255,255,255,0.05); border-radius: 5px; padding: 2px 8px; }
+
+.carriers-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { display: flex; align-items: center; gap: 5px; font-size: 12px; color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.04); border: 1px solid var(–border); border-radius: 6px; padding: 3px 10px; }
+
+.result-bottom { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.meta-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta { display: flex; flex-direction: column; gap: 1px; }
+.meta-label { font-size: 10px; color: var(–dimmer); }
+.meta-val { font-family: ‘Space Mono’, monospace; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); }
+.meta-val-green { color: var(–green2); }
+.meta-val-orange { color: #ffd166; }
+
+.price-block { text-align: right; }
+.price { font-family: ‘Space Mono’, monospace; font-size: 22px; font-weight: 700; }
+.price-per { font-size: 11px; color: var(–dim); margin-top: 1px; }
+.price-save { font-size: 11px; color: var(–green); font-weight: 600; margin-top: 2px; }
+
+/* BID AREA */
+.bid-area {
+display: none; margin-top: 14px;
+background: rgba(26,122,255,0.05); border: 1px solid rgba(26,122,255,0.2);
+border-radius: 12px; padding: 16px 18px;
+}
+.bid-area.open { display: block; }
+.bid-title { font-size: 11px; font-weight: 700; color: var(–blue2); letter-spacing: 0.5px; margin-bottom: 10px; }
+.bid-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.bid-prefix { font-family: ‘Space Mono’, monospace; font-size: 16px; color: var(–dim); }
+.bid-input {
+width: 110px; background: rgba(255,255,255,0.06); border: 1px solid var(–border2);
+border-radius: 8px; padding: 10px 12px;
+font-family: ‘Space Mono’, monospace; font-size: 16px; font-weight: 700;
+color: white; outline: none;
+}
+.bid-input:focus { border-color: var(–blue); }
+.bid-submit {
+padding: 10px 18px; background: var(–blue); border: none;
+border-radius: 8px; color: white; font-family: ‘DM Sans’, sans-serif;
+font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+}
+.bid-submit:hover { background: var(–blue2); }
+.bid-hint { font-size: 11px; color: var(–dim); }
+.bid-warning { font-size: 11px; color: var(–red); margin-bottom: 6px; }
+.bid-fee { font-size: 11px; color: var(–dimmer); margin-top: 4px; }
+.bid-success { display: none; padding: 10px 14px; background: rgba(0,214,143,0.1); border: 1px solid rgba(0,214,143,0.25); border-radius: 8px; font-size: 13px; font-weight: 700; color: var(–green2); margin-top: 8px; }
+
+/* CARRIER SIDE */
+.posted-block { background: rgba(255,255,255,0.03); border: 1px solid var(–border2); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+.posted-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.posted-route { font-family: ‘Space Mono’, monospace; font-size: 14px; font-weight: 700; margin-bottom: 14px; color: white; }
+
+.pallet-grid { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.pv { width: 16px; height: 16px; border-radius: 3px; }
+.pv-full { background: rgba(255,255,255,0.2); }
+.pv-empty { background: rgba(0,214,143,0.15); border: 1px dashed rgba(0,214,143,0.4); }
+
+.pv-legend { display: flex; gap: 14px; margin-bottom: 12px; }
+.pvl { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(–dim); }
+.pvl-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+.stats-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat-label { font-size: 10px; color: var(–dimmer); }
+.stat-val { font-family: ‘Space Mono’, monospace; font-size: 14px; font-weight: 700; }
+
+.bids-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(–dim); margin: 16px 0 8px; }
+
+.ibid { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.03); border: 1px solid var(–border); }
+.ibid.top { background: rgba(0,214,143,0.06); border-color: rgba(0,214,143,0.2); }
+.ibid-rank { width: 22px; height: 22px; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rank1 { background: rgba(0,214,143,0.2); color: var(–green2); }
+.rank2 { background: rgba(255,255,255,0.06); color: var(–dim); }
+.rank3 { background: rgba(255,255,255,0.04); color: var(–dimmer); }
+.ibid-co { flex: 1; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); }
+.ibid-detail { font-size: 11px; color: var(–dim); }
+.ibid-price { font-family: ‘Space Mono’, monospace; font-size: 15px; font-weight: 700; }
+.price-top { color: var(–green2); }
+.price-mid { color: rgba(255,255,255,0.5); }
+.price-low { color: var(–dimmer); }
+.match-conf { font-size: 11px; color: var(–green); font-weight: 700; margin-top: 4px; padding-left: 42px; margin-bottom: 6px; }
+
+.accept-btn {
+width: 100%; margin-top: 14px; padding: 13px; border: none; border-radius: 10px;
+background: linear-gradient(135deg, #2a2a32, #3a3a44);
+border: 1px solid rgba(255,255,255,0.1);
+color: white; font-family: ‘DM Sans’, sans-serif; font-size: 14px; font-weight: 700;
+cursor: pointer; transition: all 0.2s;
+}
+.accept-btn:hover { background: rgba(0,214,143,0.15); border-color: rgba(0,214,143,0.3); color: var(–green2); }
+
+/* FEED */
+.feed-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(–dim); margin: 16px 0 8px; }
+.feed-row { font-family: ‘Space Mono’, monospace; font-size: 11px; color: rgba(255,255,255,0.35); padding: 5px 0; border-bottom: 1px solid var(–border); display: flex; justify-content: space-between; }
+.feed-row:last-child { border-bottom: none; }
+.ft { color: var(–dimmer); }
+.fc { color: rgba(255,255,255,0.55); }
+.fp { color: rgba(255,255,255,0.7); }
+.fd-up { color: var(–green); }
+.fd-down { color: var(–red); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 13px 18px; font-size: 13px; font-weight: 600; color: white; max-width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); transform: translateY(20px); opacity: 0; transition: all 0.3s cubic-bezier(.16,1,.3,1); pointer-events: none; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+@media(max-width:600px){
+.row2, .row3 { grid-template-columns: 1fr; }
+.result-bottom { flex-direction: column; align-items: flex-start; }
+.price-block { text-align: left; }
+}
 </style>
+
 </head>
 <body>
-<div class="card">
-  <div class="header">
-    <div>
-      <div class="logo-row">
-        <div class="logo">Route<em>MX</em></div>
-        <div class="status-pill"><span class="pulse-dot"></span>Market open</div>
-      </div>
-      <div class="headline">Stop paying fixed freight rates.<br>Let carriers <span class="accent">compete on every segment.</span></div>
-      <div style="font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:14px;">A market layer for freight capacity.</div>
-      <div class="subheadline">RouteMX splits every shipment into segments and runs a live bid. Best carrier wins each leg. Total cost goes down.</div>
-    </div>
-    <div class="header-stat">
-      <div class="header-stat-label">Save on every shipment</div>
-      <div class="header-stat-value">2–5%</div>
-      <div class="header-stat-sub">typical savings per route</div>
-    </div>
-  </div>
-  <div class="route-strip">
-    <div class="route-name"><span class="route-dot"></span>Amsterdam → Warsaw<span style="color:rgba(255,255,255,0.2);font-weight:400;font-size:14px;">· FTL · 22 pallets</span></div>
-    <div class="route-meta">
-      <div class="meta-item">Transit: <strong>24h</strong></div>
-      <div class="meta-item">Carriers bid: <strong>7</strong></div>
-      <div class="meta-item">Segments: <strong>3</strong></div>
-    </div>
-  </div>
-  <div class="segments-wrap">
-    <div class="segments">
-      <div class="seg">
-        <div class="seg-top"><div class="seg-type">Pick-up</div></div>
-        <div class="seg-cities">Amsterdam<br><span>→</span> AMS Hub</div>
-        <div class="seg-carrier"><div class="carrier-icon">🚐</div>Van Doorn Logistics</div>
-        <div class="seg-price-row"><div class="price-now">€310</div><div class="price-was">€390</div><div class="price-delta">–€80</div></div>
-        <div class="bids-row"><div class="bid-bar winner" style="height:28px"></div><div class="bid-bar" style="height:20px"></div><div class="bid-bar" style="height:14px"></div></div>
-        <div class="bids-label">3 bids · best selected</div>
-      </div>
-      <div class="connector"><div class="conn-line"></div></div>
-      <div class="seg best">
-        <div class="seg-top"><div class="seg-type">Line Haul</div><div class="best-tag">Best bid</div></div>
-        <div class="seg-cities">AMS Hub<br><span>→</span> WAW Terminal</div>
-        <div class="seg-carrier"><div class="carrier-icon">🚛</div>TransKarpat</div>
-        <div class="seg-price-row"><div class="price-now">€1,840</div><div class="price-was">€2,100</div><div class="price-delta">–€260</div></div>
-        <div class="bids-row"><div class="bid-bar winner" style="height:28px"></div><div class="bid-bar" style="height:22px"></div><div class="bid-bar" style="height:18px"></div><div class="bid-bar" style="height:15px"></div></div>
-        <div class="bids-label">4 bids · best selected</div>
-      </div>
-      <div class="connector"><div class="conn-line"></div></div>
-      <div class="seg">
-        <div class="seg-top"><div class="seg-type">Last Mile</div></div>
-        <div class="seg-cities">WAW Terminal<br><span>→</span> Warsaw</div>
-        <div class="seg-carrier"><div class="carrier-icon">🚚</div>FastDel PL</div>
-        <div class="seg-price-row"><div class="price-now">€220</div><div class="price-was">€260</div><div class="price-delta">–€40</div></div>
-        <div class="bids-row"><div class="bid-bar winner" style="height:28px"></div><div class="bid-bar" style="height:16px"></div></div>
-        <div class="bids-label">2 bids · best selected</div>
-      </div>
-    </div>
-  </div>
-  <div class="outcome-wrap">
-    <div class="outcome">
-      <div class="outcome-numbers">
-        <div class="out-item"><div class="out-label">Fixed contract</div><div class="out-val">€2,750</div></div>
-        <div class="out-divider"></div>
-        <div class="out-item"><div class="out-label">RouteMX total</div><div class="out-val active">€2,370</div></div>
-        <div class="out-divider"></div>
-        <div class="saving-block"><div class="saving-tag">↓ Example route: 13.8% saved</div><div class="saving-big">€380</div><div class="saving-sub">13.8% on this shipment</div></div>
-      </div>
-      <div class="cta-wrap">
-        <button class="cta">See savings on your routes →</button>
-        <div class="cta-hint">Free to try · No carrier changes needed</div>
-      </div>
-    </div>
-  </div>
-  <div class="footer">
-    <div class="scale-note">Running <strong>400 shipments/month</strong> at this rate?<br>That's <span class="highlight">€152,000 back per year</span> — without changing a single carrier.</div>
-    <div class="trust-pills">
-      <div class="tpill">No carrier changes needed</div>
-      <div class="tpill">Works with your carriers</div>
-      <div class="tpill">No integration needed</div>
-      <div class="tpill">Live in 48h</div>
-    </div>
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+  <div class="logo">
+    <svg width="34" height="26" viewBox="0 0 34 26" fill="none" style="margin-right:8px;flex-shrink:0;">
+      <circle cx="7" cy="5" r="4.5" fill="#ff6b00"/>
+      <circle cx="27" cy="13" r="3.5" fill="#ff6b00" opacity="0.75"/>
+      <circle cx="7" cy="21" r="2.8" fill="#ff6b00" opacity="0.5"/>
+      <line x1="11.5" y1="7" x2="23.5" y2="11.5" stroke="#ff6b00" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="23.5" y1="14.5" x2="10" y2="20" stroke="#ff6b00" stroke-width="1.4" stroke-linecap="round" opacity="0.55"/>
+    </svg>
+    Route<span class="logo-mx">MX</span><sup style="font-size:9px;color:rgba(255,255,255,0.2);font-weight:400;margin-left:1px;">™</sup>
   </div>
 </div>
+
+<!-- TABS -->
+
+<div class="tabs">
+  <button class="tab active" id="tab-fw" onclick="switchTab('fw')">↓ I need capacity</button>
+  <button class="tab" id="tab-cr" onclick="switchTab('cr')">↑ I have empty space</button>
+</div>
+
+<!-- FORWARDER VIEW -->
+
+<div id="view-fw">
+<div class="card">
+  <div class="row2">
+    <div class="field"><div class="field-label">From</div><input class="field-input" id="fw-from" type="text" value="Milan" placeholder="City"></div>
+    <div class="field"><div class="field-label">To</div><input class="field-input" id="fw-to" type="text" value="Venice" placeholder="City"></div>
+  </div>
+  <div class="row3">
+    <div class="field"><div class="field-label">Date</div><input class="field-input" id="fw-date" type="date"></div>
+    <div class="field">
+      <div class="field-label">Number of boxes</div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty('fw',-1)">−</button>
+        <div class="qty-val" id="fw-qty">5</div>
+        <button class="qty-btn" onclick="changeQty('fw',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Box size</div>
+      <div class="sizes">
+        <button class="size-btn" onclick="pickSize(this,'fw')">S<br><small>40×40</small></button>
+        <button class="size-btn active" onclick="pickSize(this,'fw')">M<br><small>60×40</small></button>
+        <button class="size-btn" onclick="pickSize(this,'fw')">L<br><small>120×80</small></button>
+        <button class="size-btn" onclick="pickSize(this,'fw')">Pallet</button>
+      </div>
+    </div>
+  </div>
+  <button class="search-btn btn-blue" id="fw-btn" onclick="searchRoutes()">Search available routes →</button>
+</div>
+
+<div class="results" id="fw-results">
+
+  <div class="reco-card" id="fw-reco">
+    <div class="reco-top">
+      <div class="reco-label">✓ Instant booking — no waiting</div>
+      <div class="reco-rate">92% success rate</div>
+    </div>
+    <div class="slabel" style="color:var(--green2);margin-bottom:8px;">Best option — fastest + high reliability</div>
+    <div class="reco-title">Milan → Venice · Direct</div>
+    <div class="reco-meta">Fercam Italia · 08:00 · 3h transit · 8 boxes M available</div>
+    <div class="reco-bottom">
+      <div>
+        <div class="reco-price">€180</div>
+        <div class="reco-per">€36 / box · vs €45 market avg</div>
+      </div>
+      <button class="book-btn" id="book-btn" onclick="bookNow()">Book now →</button>
+    </div>
+    <div class="trust-row">
+      <span class="trust-item">✓ Payment secured</span>
+      <span class="trust-item">✓ Carrier verified</span>
+      <span class="trust-item">✓ Insurance included</span>
+    </div>
+  </div>
+
+  <div class="market-signal" id="fw-signal" style="display:none;">⚡ 3 carriers have capacity on this route right now</div>
+
+  <div class="slabel">Step 2 — Book instantly or send an offer</div>
+  <div class="feed-label">Live market activity</div>
+  <div id="fw-feed">
+    <div class="feed-row"><span class="ft">10:21:04</span><span class="fc">Dachser</span><span class="fp">€162 · 3 boxes</span><span class="fd-up">↑ +€12</span></div>
+    <div class="feed-row"><span class="ft">10:19:47</span><span class="fc">DSV</span><span class="fp">€198 · 6 boxes</span><span class="fd-up">↑ +€8</span></div>
+    <div class="feed-row"><span class="ft">10:18:33</span><span class="fc">XPO</span><span class="fp">€145 · 2 boxes</span><span class="fd-down">↓ –€5</span></div>
+  </div>
+
+  <!-- CARD 1 -->
+
+  <div class="result-card" onclick="selectCard(this,'bid1')">
+    <div class="result-top">
+      <span class="rtag rtag-direct">Direct</span>
+      <span class="btag btag-reliable">Most reliable</span>
+      <span class="btag btag-slots">2 slots left</span>
+    </div>
+    <div class="result-route">Milan <span class="route-arrow">→</span> Venice</div>
+    <div class="carriers-row">
+      <div class="chip">🚛 Fercam Italia</div>
+      <div class="chip">⭐ 4.8 · 1,240 shipments · 97% on-time</div>
+    </div>
+    <div class="result-bottom">
+      <div class="meta-row">
+        <div class="meta"><div class="meta-label">Transit</div><div class="meta-val">3h</div></div>
+        <div class="meta"><div class="meta-label">Space</div><div class="meta-val">8 boxes M</div></div>
+        <div class="meta"><div class="meta-label">Departs</div><div class="meta-val">08:00</div></div>
+        <div class="meta"><div class="meta-label">Reliability</div><div class="meta-val meta-val-green">97%</div></div>
+        <div class="meta"><div class="meta-label">Handling</div><div class="meta-val">Direct</div></div>
+      </div>
+      <div class="price-block">
+        <div class="price">€180</div>
+        <div class="price-per">€36/box · vs €45 market</div>
+        <div class="price-save">↓ Save €45 total</div>
+      </div>
+    </div>
+    <div class="bid-area" id="bid1">
+      <div class="bid-title">Offer your price — Milan → Venice · Direct · Fercam Italia</div>
+      <div class="bid-input-row">
+        <span class="bid-prefix">€</span>
+        <input class="bid-input" type="number" value="180" min="100" max="500">
+        <button class="bid-submit" onclick="submitBid(event,'bid1')">Send offer</button>
+      </div>
+      <div class="bid-hint">Market range: €160–€230 · Floor: €145</div>
+      <div class="bid-fee">Includes €8 platform fee</div>
+      <div class="trust-row" style="margin-top:8px;">
+        <span class="trust-item">✓ Payment secured</span>
+        <span class="trust-item">✓ Carrier verified</span>
+        <span class="trust-item">✓ Insurance included</span>
+      </div>
+      <div class="bid-success" id="bid1-ok">✓ Offer sent — carrier will respond within 15 min</div>
+    </div>
+  </div>
+
+  <!-- CARD 2 -->
+
+  <div class="result-card" onclick="selectCard(this,'bid2')">
+    <div class="result-top">
+      <span class="rtag rtag-connect">Connecting</span>
+    </div>
+    <div class="result-route">Milan <span class="route-arrow">→</span> <span class="route-stop">Verona Hub</span> <span class="route-arrow">→</span> Venice</div>
+    <div class="carriers-row">
+      <div class="chip">🚐 NordEst Express</div>
+      <div class="chip">🚚 VenLogistic</div>
+      <div class="chip">⭐ 4.6 · 890 shipments · 94% on-time</div>
+    </div>
+    <div class="result-bottom">
+      <div class="meta-row">
+        <div class="meta"><div class="meta-label">Transit</div><div class="meta-val">5h</div></div>
+        <div class="meta"><div class="meta-label">Space</div><div class="meta-val">12 boxes M</div></div>
+        <div class="meta"><div class="meta-label">Departs</div><div class="meta-val">10:30</div></div>
+        <div class="meta"><div class="meta-label">Reliability</div><div class="meta-val meta-val-orange">88%</div></div>
+        <div class="meta"><div class="meta-label">Handling</div><div class="meta-val">+1 transfer</div></div>
+      </div>
+      <div class="price-block">
+        <div class="price">€155</div>
+        <div class="price-per">€31/box · vs €45 market</div>
+        <div class="price-save">↓ Save €70 total</div>
+      </div>
+    </div>
+    <div class="bid-area" id="bid2">
+      <div class="bid-title">Offer your price — Milan → Venice · via Verona</div>
+      <div class="bid-warning">⚠ Higher delay risk due to multiple handoffs</div>
+      <div class="bid-input-row">
+        <span class="bid-prefix">€</span>
+        <input class="bid-input" type="number" value="155" min="100" max="400">
+        <button class="bid-submit" onclick="submitBid(event,'bid2')">Send offer</button>
+      </div>
+      <div class="bid-hint">Market range: €130–€190 · Floor: €120</div>
+      <div class="bid-fee">Includes €8 platform fee</div>
+      <div class="bid-success" id="bid2-ok">✓ Offer sent — carriers will respond within 15 min</div>
+    </div>
+  </div>
+
+  <!-- CARD 3 -->
+
+  <div class="result-card" onclick="selectCard(this,'bid3')">
+    <div class="result-top">
+      <span class="rtag rtag-ai">AI optimized · lowest cost</span>
+      <span class="btag btag-cheap">Cheapest</span>
+    </div>
+    <div class="result-route">Milan <span class="route-arrow">→</span> <span class="route-stop">Bologna</span> <span class="route-arrow">→</span> <span class="route-stop">Padova</span> <span class="route-arrow">→</span> Venice</div>
+    <div class="carriers-row">
+      <div class="chip">🚛 ToscoEmilia</div>
+      <div class="chip">🚐 PadovaShip</div>
+      <div class="chip">🚚 Lagunare SRL</div>
+      <div class="chip">⭐ 4.7 · 2,100 shipments · 96% on-time</div>
+    </div>
+    <div class="result-bottom">
+      <div class="meta-row">
+        <div class="meta"><div class="meta-label">Transit</div><div class="meta-val">7h</div></div>
+        <div class="meta"><div class="meta-label">Space</div><div class="meta-val">5 boxes M</div></div>
+        <div class="meta"><div class="meta-label">Departs</div><div class="meta-val">07:15</div></div>
+        <div class="meta"><div class="meta-label">Reliability</div><div class="meta-val meta-val-green">93%</div></div>
+        <div class="meta"><div class="meta-label">Handling</div><div class="meta-val">+2 transfers</div></div>
+      </div>
+      <div class="price-block">
+        <div class="price">€128</div>
+        <div class="price-per">€25/box · vs €45 market</div>
+        <div class="price-save">↓ Save €85 total</div>
+      </div>
+    </div>
+    <div class="bid-area" id="bid3">
+      <div class="bid-title">Offer your price — Milan → Venice · 3 segments</div>
+      <div class="bid-input-row">
+        <span class="bid-prefix">€</span>
+        <input class="bid-input" type="number" value="128" min="80" max="300">
+        <button class="bid-submit" onclick="submitBid(event,'bid3')">Send offer</button>
+      </div>
+      <div class="bid-hint">Market range: €110–€160 · Floor: €100</div>
+      <div class="bid-fee">Includes €8 platform fee</div>
+      <div class="bid-success" id="bid3-ok">✓ Offer sent — carriers will respond within 15 min</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- CARRIER VIEW -->
+
+<div id="view-cr" style="display:none;">
+<div class="card">
+  <div class="slabel" style="margin-bottom:12px;">Turn empty truck space into revenue in minutes</div>
+  <div class="row2">
+    <div class="field"><div class="field-label">From</div><input class="field-input" id="cr-from" type="text" value="Milan"></div>
+    <div class="field"><div class="field-label">To</div><input class="field-input" id="cr-to" type="text" value="Venice"></div>
+  </div>
+  <div class="row3">
+    <div class="field"><div class="field-label">Departure</div><input class="field-input" id="cr-dt" type="datetime-local"></div>
+    <div class="field">
+      <div class="field-label">Empty boxes</div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty('cr',-1)">−</button>
+        <div class="qty-val" id="cr-qty">8</div>
+        <button class="qty-btn" onclick="changeQty('cr',1)">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Sizes accepted</div>
+      <div class="sizes">
+        <button class="size-btn" onclick="pickSize(this,'cr')">S</button>
+        <button class="size-btn active" onclick="pickSize(this,'cr')">M</button>
+        <button class="size-btn active" onclick="pickSize(this,'cr')">L</button>
+        <button class="size-btn" onclick="pickSize(this,'cr')">Pallet</button>
+      </div>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field"><div class="field-label">Floor price (minimum)</div><input class="field-input" id="cr-floor" type="number" value="140"></div>
+    <div class="field"><div class="field-label">Auto-accept above</div><input class="field-input" id="cr-auto" type="number" value="190"></div>
+  </div>
+  <div class="field">
+    <div class="field-label">Cargo type</div>
+    <select class="field-input" id="cr-cargo">
+      <option>General cargo</option>
+      <option>Food / HACCP</option>
+      <option>Pharma / GDP</option>
+      <option>Hazardous / ADR</option>
+      <option>Clothing / fashion</option>
+    </select>
+  </div>
+  <button class="search-btn btn-grey" onclick="postCapacity()">Post empty space →</button>
+</div>
+
+<div class="results" id="cr-results">
+  <div class="posted-block">
+    <div class="posted-title">Your posted capacity</div>
+    <div class="posted-route" id="cr-display">Milan → Venice · 8 empty boxes M/L · departs 08:00</div>
+    <div class="pallet-grid" id="cr-pallets"></div>
+    <div class="pv-legend">
+      <div class="pvl"><div class="pvl-dot" style="background:rgba(255,255,255,0.2)"></div>Your cargo</div>
+      <div class="pvl"><div class="pvl-dot" style="background:rgba(0,214,143,0.15);border:1px dashed rgba(0,214,143,0.4)"></div>Unsold capacity (earning €0 now)</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-label">Empty space</div><div class="stat-val" style="color:var(--green2)" id="cr-avail">8 boxes</div></div>
+      <div class="stat"><div class="stat-label">Floor price</div><div class="stat-val" style="color:white">€140</div></div>
+      <div class="stat"><div class="stat-label">Auto-accept</div><div class="stat-val" style="color:white">>€190</div></div>
+    </div>
+  </div>
+
+  <div class="bids-label">Incoming bids from forwarders</div>
+  <div class="ibid top">
+    <div class="ibid-rank rank1">1</div>
+    <div class="ibid-co">Rhenus Logistics</div>
+    <div class="ibid-detail">5 / 8 boxes filled</div>
+    <div class="ibid-price price-top">€195</div>
+  </div>
+  <div class="match-conf">92% match confidence</div>
+  <div class="ibid">
+    <div class="ibid-rank rank2">2</div>
+    <div class="ibid-co">DB Schenker</div>
+    <div class="ibid-detail">8 boxes M</div>
+    <div class="ibid-price price-mid">€170</div>
+  </div>
+  <div class="ibid">
+    <div class="ibid-rank rank3">3</div>
+    <div class="ibid-co">Geodis</div>
+    <div class="ibid-detail">3 boxes L</div>
+    <div class="ibid-price price-low">€142</div>
+  </div>
+  <button class="accept-btn" id="cr-accept" onclick="acceptBid()">✓ Accept best bid — €195 for 5 boxes</button>
+
+  <div class="feed-label">Live bid feed</div>
+  <div id="cr-feed">
+    <div class="feed-row"><span class="ft">12:04:18</span><span class="fc">Rhenus</span><span class="fp">€195 · 5 boxes</span><span class="fd-up">↑ new</span></div>
+    <div class="feed-row"><span class="ft">12:03:55</span><span class="fc">DB Schenker</span><span class="fp">€170 · 8 boxes</span><span class="fd-up">↑ +€20</span></div>
+    <div class="feed-row"><span class="ft">12:03:41</span><span class="fc">Geodis</span><span class="fp">€142 · 3 boxes</span><span class="fd-down">↓ –€8</span></div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const state = { fwQty: 5, crQty: 8 };
+
+// Dates
+const now = new Date();
+document.getElementById('fw-date').value = now.toISOString().split('T')[0];
+const dtl = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+document.getElementById('cr-dt').value = dtl;
+
+// Tab switch
+function switchTab(t) {
+  document.getElementById('tab-fw').classList.toggle('active', t==='fw');
+  document.getElementById('tab-cr').classList.toggle('active', t==='cr');
+  document.getElementById('view-fw').style.display = t==='fw' ? 'block' : 'none';
+  document.getElementById('view-cr').style.display = t==='cr' ? 'block' : 'none';
+}
+
+// Qty
+function changeQty(side, d) {
+  const k = side+'Qty';
+  state[k] = Math.max(1, Math.min(50, state[k]+d));
+  document.getElementById(side+'-qty').textContent = state[k];
+}
+
+// Size
+function pickSize(btn, side) {
+  if (side === 'fw') {
+    btn.closest('.sizes').querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    btn.classList.toggle('active');
+  }
+}
+
+// Search
+async function searchRoutes() {
+  const from = document.getElementById('fw-from').value.trim();
+  const to = document.getElementById('fw-to').value.trim();
+  if (!from || !to) { showToast('Please enter departure and destination'); return; }
+  const btn = document.getElementById('fw-btn');
+  btn.textContent = 'Scanning live capacity...';
+  btn.disabled = true;
+  await new Promise(r => setTimeout(r, 1200));
+  document.getElementById('fw-results').classList.add('visible');
+  document.getElementById('fw-reco').style.display = 'block';
+  document.getElementById('fw-signal').style.display = 'block';
+  document.getElementById('fw-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  btn.textContent = 'Search available routes →';
+  btn.disabled = false;
+}
+
+// Select card
+function selectCard(card, bidId) {
+  document.querySelectorAll('.result-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.bid-area').forEach(b => b.classList.remove('open'));
+  card.classList.add('selected');
+  document.getElementById(bidId).classList.add('open');
+}
+
+// Submit bid
+function submitBid(e, bidId) {
+  e.stopPropagation();
+  document.getElementById(bidId+'-ok').style.display = 'block';
+  const row = document.querySelector('#'+bidId+' .bid-input-row');
+  row.style.opacity = '0.4';
+  row.style.pointerEvents = 'none';
+}
+
+// Book now
+function bookNow() {
+  const btn = document.getElementById('book-btn');
+  btn.textContent = '✓ Booked';
+  btn.style.background = '#00d68f';
+  btn.disabled = true;
+  showToast('✓ Booking confirmed — Fercam Italia · Milan → Venice · 08:00');
+}
+
+// Post capacity
+function postCapacity() {
+  const from = document.getElementById('cr-from').value || 'Milan';
+  const to = document.getElementById('cr-to').value || 'Venice';
+  document.getElementById('cr-display').textContent = `${from} → ${to} · ${state.crQty} empty boxes M/L · departs 08:00`;
+  document.getElementById('cr-avail').textContent = state.crQty + ' boxes';
+  buildPallets(state.crQty);
+  document.getElementById('cr-results').classList.add('visible');
+  document.getElementById('cr-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Pallets
+function buildPallets(empty) {
+  const el = document.getElementById('cr-pallets');
+  el.innerHTML = '';
+  for (let i = 0; i < empty + 12; i++) {
+    const d = document.createElement('div');
+    d.className = 'pv ' + (i < 12 ? 'pv-full' : 'pv-empty');
+    el.appendChild(d);
+  }
+}
+buildPallets(8);
+
+// Accept bid
+function acceptBid() {
+  const btn = document.getElementById('cr-accept');
+  btn.textContent = '✓ Accepted — 5 boxes booked · €195 confirmed';
+  btn.style.color = 'var(--green2)';
+  btn.disabled = true;
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// Live feeds
+const cos = ['Dachser','Kuehne+Nagel','DSV','Rhenus','XPO','Bolloré','DB Schenker'];
+function addTick(feedId) {
+  const feed = document.getElementById(feedId);
+  if (!feed) return;
+  const co = cos[Math.floor(Math.random()*cos.length)];
+  const boxes = Math.floor(Math.random()*6)+1;
+  const price = boxes*(Math.floor(Math.random()*20)+28);
+  const n = new Date();
+  const t = [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  const up = Math.random()>0.4;
+  const d = Math.floor(Math.random()*20)+3;
+  const row = document.createElement('div');
+  row.className = 'feed-row';
+  row.innerHTML = `<span class="ft">${t}</span><span class="fc">${co}</span><span class="fp">€${price} · ${boxes} boxes</span><span class="${up?'fd-up':'fd-down'}">${up?'↑ +':'↓ –'}€${d}</span>`;
+  feed.insertBefore(row, feed.firstChild);
+  if (feed.children.length > 5) feed.removeChild(feed.lastChild);
+}
+setInterval(() => addTick('fw-feed'), 4000);
+setInterval(() => addTick('cr-feed'), 3500);
+</script>
+
 </body>
 </html>
